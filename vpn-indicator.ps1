@@ -30,11 +30,25 @@ function New-DotIcon([System.Drawing.Color]$Fill) {
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $g.Clear([System.Drawing.Color]::Transparent)
+
+    $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+    # Big "V" made of two thick strokes meeting at the bottom
+    $points = @(
+        [System.Drawing.PointF]::new(3, 3),
+        [System.Drawing.PointF]::new(16, 30),
+        [System.Drawing.PointF]::new(29, 3),
+        [System.Drawing.PointF]::new(20, 3),
+        [System.Drawing.PointF]::new(16, 15),
+        [System.Drawing.PointF]::new(12, 3)
+    )
+    $path.AddPolygon($points)
+
     $brush = New-Object System.Drawing.SolidBrush $Fill
-    $pen   = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(220, 255, 255, 255)), 2
-    $g.FillEllipse($brush, 3, 3, 26, 26)
-    $g.DrawEllipse($pen, 3, 3, 26, 26)
-    $g.Dispose(); $brush.Dispose(); $pen.Dispose()
+    $pen   = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(220, 255, 255, 255)), 1.5
+    $pen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+    $g.FillPath($brush, $path)
+    $g.DrawPath($pen, $path)
+    $g.Dispose(); $brush.Dispose(); $pen.Dispose(); $path.Dispose()
     return [System.Drawing.Icon]::FromHandle($bmp.GetHicon())
 }
 
